@@ -17,7 +17,7 @@ type userService struct{
 	userRepo domain.UserRepository
 }
 
-func NewUserService (userRepo domain.UserRepository) *userService{
+func NewUserService (userRepo domain.UserRepository) UserService{
 	return &userService{userRepo: userRepo}
 }
 
@@ -48,6 +48,13 @@ func (s *userService) RegisterUser(name, email, password, bio, gender, profilePi
 		JoinedOn: time.Now(),
 		ProfilePicture: profilePicture,
 	}
+
+	err = s.userRepo.New(user)
+
+	if err != nil{
+		return nil, err
+	}
+
 	return user, nil
 }
 

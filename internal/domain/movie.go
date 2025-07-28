@@ -24,7 +24,7 @@ type Movie struct {
 
 type MovieRepository interface {
 	New(movie *Movie) error
-	GetByMovieById(id int64) (*Movie, error)
+	GetMovieById(id int64) (*Movie, error)
 	Update(movie *Movie) error
 	Delete(movieId int64) error
 }

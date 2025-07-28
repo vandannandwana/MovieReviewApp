@@ -4,6 +4,8 @@ import (
 	"database/sql"
 
 	"github.com/vandannandwana/MovieReviewApp/internal/domain"
+	_ "github.com/lib/pq"
+	
 )
 
 type postgresUserRepository struct {
