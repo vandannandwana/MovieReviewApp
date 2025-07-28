@@ -2,10 +2,10 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 
-	"github.com/vandannandwana/MovieReviewApp/internal/domain"
 	_ "github.com/lib/pq"
-	
+	"github.com/vandannandwana/MovieReviewApp/internal/domain"
 )
 
 type postgresUserRepository struct {
@@ -27,11 +27,86 @@ func (r *postgresUserRepository) New(user *domain.User) error{
 }
 
 func (r *postgresUserRepository) GetByEmail(email string) (*domain.User, error){
-	return nil, nil
+
+	stmt, err := r.db.Prepare("SELECT name, email, password, bio, joinedOn, profilePicture, gender FROM users WHERE email = $1 LIMIT 1")
+
+	if err != nil{
+		return nil, err
+	}
+
+	defer stmt.Close()
+
+	var user domain.User
+
+	err = stmt.QueryRow(email).Scan(&user.Name, &user.Email, &user.Password, &user.Bio, &user.JoinedOn, &user.ProfilePicture, &user.Gender)
+
+	if err != nil{
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("no user found with the email id %s", fmt.Sprint(email))
+		}
+		return nil, fmt.Errorf("query Error: %w", err)
+	}
+
+	return &user, nil
 }
-func (r *postgresUserRepository) Update(user *domain.User) error{
+func (r *postgresUserRepository) Update(user *domain.User, email string) error{
+
+	stmt, err := r.db.Prepare("UPDATE table SET name = $1, email = $2, password = $3, bio = $4, gender = $5, profilePicture = $6 WHERE email = $7")
+
+
+	if err != nil{
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(user.Name, user.Email, user.Password, user.Bio, user.Gender, user.ProfilePicture, email)
+
+	if err != nil{
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("no user found with the email id %s", fmt.Sprint(email))
+		}
+		return fmt.Errorf("query Error: %w", err)
+	}
+
 	return nil
+
 }
 func (r *postgresUserRepository) Delete(email string) error{
+
+	stmt, err := r.db.Prepare("SELECT * FROM users WHERE email = $1")
+
+	if err != nil{
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(email)
+
+	if err != nil{
+		if err == sql.ErrNoRows{
+			return fmt.Errorf("no user found with the email id: %v", err)
+		}else{
+			return err
+		}
+	}
+	
+	if err != nil{
+		return err
+	}
+
+	stmt, err = r.db.Prepare("DELETE FROM users WHERE email = $1")
+
+	if err != nil{
+		return err
+	}
+
+	_, err = stmt.Exec(email)
+
+	if err != nil{
+		return err
+	}
+
 	return nil
 }

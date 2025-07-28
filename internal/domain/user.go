@@ -15,6 +15,6 @@ type User struct {
 type UserRepository interface{
 	New(user *User) error
 	GetByEmail(email string) (*User, error)
-	Update(user *User) error
+	Update(user *User, email string) error
 	Delete(email string) error
 }

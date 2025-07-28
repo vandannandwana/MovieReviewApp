@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/vandannandwana/MovieReviewApp/internal/domain"
+	"github.com/gin-gonic/gin"
 	"github.com/vandannandwana/MovieReviewApp/internal/usecase"
 )
 
@@ -20,16 +20,12 @@ func NewMovieHandler(movieService usecase.MovieService) *MovieHandler {
 	return &MovieHandler{movieService: movieService}
 }
 
-func (h *MovieHandler) CreateMovie(movie *domain.Movie) error {
-	return nil
+func (h *MovieHandler) CreateMovie(c *gin.Context) {
 }
 
-func (h *MovieHandler) GetMovieById(id int64) (*domain.Movie, error) {
-	return nil, nil
+func (h *MovieHandler) GetMovieById(c *gin.Context) {
 }
-func (h *MovieHandler) UpdateMovie(movie *domain.Movie) error {
-	return nil
+func (h *MovieHandler) UpdateMovie(c *gin.Context) {
 }
-func (h *MovieHandler) DeleteMovie(movieId int64) error {
-	return nil
+func (h *MovieHandler) DeleteMovie(c *gin.Context) {
 }

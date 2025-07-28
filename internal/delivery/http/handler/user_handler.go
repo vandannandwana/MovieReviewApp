@@ -66,7 +66,7 @@ func (h *UserHandler) LoginUser(c *gin.Context){
 	isLoggedIn, err := h.userService.LoginUser(req.Email, req.Password)
 
 	if err !=nil{
-		c.JSON(http.StatusInternalServerError, "Failed to login: "+err.Error())
+		c.JSON(http.StatusBadRequest, "Failed to login: "+err.Error())
 		return
 	}
 

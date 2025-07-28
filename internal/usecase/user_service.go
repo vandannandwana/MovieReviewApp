@@ -33,7 +33,9 @@ func (s *userService) RegisterUser(name, email, password, bio, gender, profilePi
 		return nil, errors.New("user already exists")
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	var hashedPassword []byte
+
+	hashedPassword, err = bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	if err != nil{
 		return nil, err
@@ -65,8 +67,16 @@ func (s *userService) LoginUser(email, password string) (bool, error){
 		return false, err
 	}
 
+	if user == nil{
+		return false, errors.New("user not found")
+	}
+
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil{
-		return false, err
+		if err == bcrypt.ErrMismatchedHashAndPassword{
+			return false, errors.New("password not matched")
+		}else{
+			return false, err
+		}
 	}
 
 	return true, nil

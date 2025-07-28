@@ -33,19 +33,19 @@ func main() {
 	}
 
 
-	userDatabase, err := persistance.New(db)
+	postgresDatabase, err := persistance.New(db)
 	if err !=nil{
 		log.Fatal(err.Error())
 	}
 
 
 	defer func(){
-		if err := userDatabase.Db.Close(); err != nil{
+		if err := postgresDatabase.Db.Close(); err != nil{
 			log.Printf("Error closing the Database: %s", err.Error())
 		}
 	}()
 
-	if err := userDatabase.Db.Ping(); err != nil{
+	if err := postgresDatabase.Db.Ping(); err != nil{
 		log.Fatalf("Failed to ping database: %v", err)
 	}
 
@@ -53,17 +53,23 @@ func main() {
 
 	//Initialize Repos
 
-	userRepo := postgres.NewPostgresUserRepository(userDatabase.Db)
+	userRepo := postgres.NewPostgresUserRepository(postgresDatabase.Db)
+	movieRepo := postgres.NewPostgreMovieRepository(postgresDatabase.Db)
+	reviewRepo := postgres.NewPostgreReviewRepository(postgresDatabase.Db)
 
 	//Initialize Services
 
 	userService := usecase.NewUserService(userRepo)
+	movieService := usecase.NewMovieService(movieRepo)
+	reviewService := usecase.NewReviewService(reviewRepo)
 
 	//Initialize Handlers
 
 	userHandler := handler.NewUserHandler(userService)
+	movieHandler := handler.NewMovieHandler(movieService)
+	reviewHandler := handler.NewReviewHandler(reviewService)
 
-	router := http.NewRouter(*userHandler)
+	router := http.NewRouter(*userHandler, *movieHandler, *reviewHandler)
 
 	log.Printf("Starting HTTP server on port %s...", httpPort)
 	if err := router.Run(httpPort); err != nil{
