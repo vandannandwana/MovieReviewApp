@@ -101,7 +101,7 @@ func (r *postgresReviewRepository) GetReviewByUserEmailId(email string) ([]dto.R
 }
 func (r *postgresReviewRepository) Update(review *domain.Review, reviewId int64) error{
 
-	query := "UPDATE table reviews SET title = $1, description = $2, rating = $3, is_spoiler = $4 WHERE review_id = $5"
+	query := "UPDATE reviews SET title = $1, description = $2, rating = $3, is_spoiler = $4 WHERE review_id = $5"
 
 	_, err := r.db.Exec(query, review.Title, review.Description, review.Rating, review.IsSpoiler, reviewId)
 

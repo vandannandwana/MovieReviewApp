@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"time"
+
 	"github.com/vandannandwana/MovieReviewApp/internal/delivery/http/dto"
 	"github.com/vandannandwana/MovieReviewApp/internal/domain"
 )
@@ -23,6 +25,10 @@ func NewReviewService(reviewRepo domain.ReviewRepository) ReviewService {
 }
 
 func (s *reviewService) CreateReview(review *domain.Review) error {
+
+	review.PublishedOn = time.Now()
+	review.LastEditOn = time.Now()
+
 
 	err := s.reviewRepo.New(review)
 

@@ -13,8 +13,8 @@ type Review struct {
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description" binding:"required"`
 	Rating      int    `json:"rating" binding:"required"`
-	Likes       int64  `json:"likes"`
-	DisLikes    int64  `json:"dislikes"`
+	Likes       int64  
+	DisLikes    int64  
 	PublishedOn time.Time
 	LastEditOn  time.Time
 	IsSpoiler   bool `json:"isSpoiler" binding:"required"`

@@ -25,10 +25,10 @@ func NewRouter(userHandler handler.UserHandler, movieHandler handler.MovieHandle
 
 	reviewRouter.POST("/", reviewHandler.CreateReview)
 	reviewRouter.GET("/:id", reviewHandler.GetReviewById)
+	reviewRouter.PUT("/:id", reviewHandler.UpdateReview)
+	reviewRouter.DELETE("/:id", reviewHandler.DeleteReview)
 	reviewRouter.GET("/movie/:id", reviewHandler.GetReviewByMovieId)
 	reviewRouter.GET("/email/:id", reviewHandler.GetReviewByUserEmailId)
-	reviewRouter.PUT("/", reviewHandler.UpdateReview)
-	reviewRouter.DELETE("/", reviewHandler.DeleteReview)
 
 	return router
 }
