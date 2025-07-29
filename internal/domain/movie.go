@@ -7,6 +7,7 @@ import (
 )
 
 type Movie struct {
+	MovieId int64 
 	UserEmail           string    `json:"email" binding:"required"`
 	Title               string    `json:"title" binding:"required"`
 	Description         string    `json:"description" binding:"required"`

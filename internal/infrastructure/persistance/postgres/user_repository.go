@@ -91,10 +91,6 @@ func (r *postgresUserRepository) Delete(email string) error{
 			return err
 		}
 	}
-	
-	if err != nil{
-		return err
-	}
 
 	stmt, err = r.db.Prepare("DELETE FROM users WHERE email = $1")
 

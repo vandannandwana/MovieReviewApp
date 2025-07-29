@@ -7,6 +7,7 @@ import (
 )
 
 type Review struct {
+	ReviewId int64
 	MovieId     int64  `json:"movieId" binding:"required"`
 	UserEmail   string `json:"userEmail" binding:"required"`
 	Title       string `json:"title" binding:"required"`

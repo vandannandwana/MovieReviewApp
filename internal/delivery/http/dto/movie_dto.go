@@ -3,7 +3,8 @@ package dto
 import "time"
 
 type CreateMovieRequest struct {
-	Title               string    `json:"title"`
+	Title               string    `json:"title" binding:"required"`
+	UserEmail           string    `json:"email" binding:"required"`
 	Description         string    `json:"description"`
 	ReleaseOn           time.Time `json:"release_on"`
 	Images              []string  `json:"images"`
@@ -12,7 +13,6 @@ type CreateMovieRequest struct {
 	Directors           []string  `json:"directors"`
 	Writes              []string  `json:"writes"`
 	Casts               []string  `json:"casts"`
-	AverageRatings      int       `json:"average_ratings"`
 	OriginCountry       string    `json:"origin_country"`
 	Languages           []string  `json:"languages"`
 	ProductionCompanies []string  `json:"production_companies"`
@@ -30,7 +30,6 @@ type UpdateMovieRequest struct {
 	Directors           []string  `json:"directors,omitempty"`
 	Writes              []string  `json:"writes,omitempty"`
 	Casts               []string  `json:"casts,omitempty"`
-	AverageRatings      int       `json:"average_ratings,omitempty"`
 	OriginCountry       string    `json:"origin_country,omitempty"`
 	Languages           []string  `json:"languages,omitempty"`
 	ProductionCompanies []string  `json:"production_companies,omitempty"`

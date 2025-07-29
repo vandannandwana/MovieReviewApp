@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/lib/pq"
 	"github.com/vandannandwana/MovieReviewApp/internal/delivery/http/dto"
 	"github.com/vandannandwana/MovieReviewApp/internal/domain"
 )
@@ -27,7 +28,24 @@ func (r *postgreMovieRepository) New(movie *domain.Movie) error{
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(movie.UserEmail, movie.Title, movie.Description, movie.ReleasedOn, movie.Images, movie.Videos, movie.Genres, movie.Directors, movie.Writers, movie.Casts, movie.AverageRatings, movie.OriginCountry, movie.Languages, movie.ProductionCompanies, movie.Budget, movie.Runtime)
+	_, err = stmt.Exec(
+		movie.UserEmail,
+		movie.Title, 
+		movie.Description, 
+		movie.ReleasedOn, 
+		pq.Array(movie.Images), 
+		pq.Array(movie.Videos), 
+		pq.Array(movie.Genres), 
+		pq.Array(movie.Directors), 
+		pq.Array(movie.Writers), 
+		pq.Array(movie.Casts), 
+		movie.AverageRatings, 
+		movie.OriginCountry, 
+		pq.Array(movie.Languages), 
+		pq.Array(movie.ProductionCompanies), 
+		movie.Budget, 
+		movie.Runtime,
+	)
 
 	if err != nil{
 		return err
@@ -47,7 +65,23 @@ func (r *postgreMovieRepository) GetMovieById(id int64) (*dto.MovieResponse, err
 
 	var movie dto.MovieResponse
 
-	err = stmt.QueryRow(id).Scan(&movie.MovieId, &movie.Title, &movie.Description, &movie.ReleaseOn, &movie.Images, &movie.Videos, &movie.Genres, &movie.Directors, &movie.Writers, &movie.Casts, &movie.AverageRatings, &movie.OriginCountry, &movie.Languages, &movie.ProductionCompanies, &movie.Budget, &movie.Runtime)
+	err = stmt.QueryRow(id).Scan(&movie.MovieId, 
+		&movie.Title, 
+		&movie.Description, 
+		&movie.ReleaseOn, 
+		pq.Array(&movie.Images), 
+		pq.Array(&movie.Videos), 
+		pq.Array(&movie.Genres), 
+		pq.Array(&movie.Directors), 
+		pq.Array(&movie.Writers), 
+		pq.Array(&movie.Casts), 
+		&movie.AverageRatings, 
+		&movie.OriginCountry, 
+		pq.Array(&movie.Languages), 
+		pq.Array(&movie.ProductionCompanies),
+		&movie.Budget, 
+		&movie.Runtime,
+	)
 
 	if err != nil{
 		return nil, err
@@ -57,7 +91,9 @@ func (r *postgreMovieRepository) GetMovieById(id int64) (*dto.MovieResponse, err
 }
 func (r *postgreMovieRepository) Update(movie *domain.Movie, movieId int64) error{
 
-	stmt, err := r.db.Prepare("UPDATE movies SET title = $1, description = $2, images = $3, videos = $4, genres = $5, directors = $6, writers = $7, casts = $8, avg_rating = $9, origin_country = $10, languages = $11, production_companies = $12, budget = $13, runtime = $14 WHERE movie_id = $15")
+	fmt.Println(movie)
+
+	stmt, err := r.db.Prepare("UPDATE movies SET title = $1, description = $2, images = $3, videos = $4, genres = $5, directors = $6, writers = $7, casts = $8, origin_country = $9, languages = $10, production_companies = $11, budget = $12, runtime = $13 WHERE movie_id = $14")
 
 	if err != nil{
 		return err
@@ -65,7 +101,22 @@ func (r *postgreMovieRepository) Update(movie *domain.Movie, movieId int64) erro
 
 	defer stmt.Close()
 
-	_, err = r.db.Exec(movie.Title, movie.Description, movie.Images, movie.Videos, movie.Genres, movie.Directors, movie.Writers, movie.Casts, movie.AverageRatings, movie.OriginCountry, movie.Languages, movie.ProductionCompanies, movie.Budget, movie.Runtime, movieId)
+	_, err = stmt.Exec(
+		movie.Title, 
+		movie.Description, 
+		pq.Array(movie.Images), 
+		pq.Array(movie.Videos), 
+		pq.Array(movie.Genres), 
+		pq.Array(movie.Directors), 
+		pq.Array(movie.Writers), 
+		pq.Array(movie.Casts), 
+		movie.OriginCountry, 
+		pq.Array(movie.Languages), 
+		pq.Array(movie.ProductionCompanies), 
+		movie.Budget, 
+		movie.Runtime, 
+		movieId,
+	)
 
 	if err != nil{
 		return err

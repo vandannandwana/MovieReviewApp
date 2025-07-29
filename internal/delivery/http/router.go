@@ -17,16 +17,16 @@ func NewRouter(userHandler handler.UserHandler, movieHandler handler.MovieHandle
 	movieRouter := router.Group("/movies")
 
 	movieRouter.POST("/", movieHandler.CreateMovie)
-	movieRouter.GET("/{id}", movieHandler.GetMovieById)
-	movieRouter.PUT("/{id}", movieHandler.UpdateMovie)
-	movieRouter.DELETE("/{id}", movieHandler.DeleteMovie)
+	movieRouter.GET("/:id", movieHandler.GetMovieById)
+	movieRouter.PUT("/:id", movieHandler.UpdateMovie)
+	movieRouter.DELETE("/:id", movieHandler.DeleteMovie)
 
 	reviewRouter := router.Group("/reviews")
 
 	reviewRouter.POST("/", reviewHandler.CreateReview)
-	reviewRouter.GET("/{id}", reviewHandler.GetReviewById)
-	reviewRouter.GET("/movie/{id}", reviewHandler.GetReviewByMovieId)
-	reviewRouter.GET("/email/{id}", reviewHandler.GetReviewByUserEmailId)
+	reviewRouter.GET("/:id", reviewHandler.GetReviewById)
+	reviewRouter.GET("/movie/:id", reviewHandler.GetReviewByMovieId)
+	reviewRouter.GET("/email/:id", reviewHandler.GetReviewByUserEmailId)
 	reviewRouter.PUT("/", reviewHandler.UpdateReview)
 	reviewRouter.DELETE("/", reviewHandler.DeleteReview)
 
