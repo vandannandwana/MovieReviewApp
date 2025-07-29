@@ -2,7 +2,8 @@ package postgres
 
 import (
 	"database/sql"
-
+	"fmt"
+	"github.com/vandannandwana/MovieReviewApp/internal/delivery/http/dto"
 	"github.com/vandannandwana/MovieReviewApp/internal/domain"
 )
 
@@ -15,27 +16,120 @@ func NewPostgreReviewRepository (db *sql.DB) (domain.ReviewRepository){
 }
 
 func (r *postgresReviewRepository) New(review *domain.Review) error{
+	query := "INSERT INTO reviews (movie_id, user_email, title, description, rating, likes, dislikes, published_on, last_edit_on, is_spoiler) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
+
+	_, err := r.db.Exec(query, review.MovieId,review.UserEmail, review.Title, review.Description, review.Rating, review.Likes, review.DisLikes, review.PublishedOn, review.LastEditOn, review.IsSpoiler)
+
+	if err != nil{
+		return err
+	}
 
 	return nil
 }
-func (r *postgresReviewRepository) GetReviewById(id int64) (*domain.Review, error){
+func (r *postgresReviewRepository) GetReviewById(id int64) (*dto.ReviewResponse, error){
 
-	return nil, nil
+	stmt, err := r.db.Prepare("SELECT review_id, movie_id, user_email, title, description, rating, likes, dislikes, published_on, last_edit_on, is_spoiler FROM reviews WHERE review_id = $1 LIMIT 1")
+
+	if err != nil{
+		return nil, err
+	}
+
+	var review dto.ReviewResponse
+
+	err = stmt.QueryRow(id).Scan(&review.ReviewId, &review.MovieId, &review.UserId, &review.Title, &review.Description, &review.Rating, &review.Likes, &review.DisLikes, &review.PublishOn, &review.LastEditOn, &review.IsSpoiler)
+
+	if err != nil{
+		return nil, err
+	}
+
+	return &review, nil
 }
-func (r *postgresReviewRepository) GetReviewByMovieId(id int64) (*domain.Review, error){
+func (r *postgresReviewRepository) GetReviewByMovieId(movie_id int64) ([]dto.ReviewResponse, error){
 
-	return nil, nil
+	stmt, err := r.db.Prepare("SELECT review_id, movie_id, user_email, title, description, rating, likes, dislikes, published_on, last_edit_on, is_spoiler FROM reviews WHERE movie_id = $1")
+
+	if err != nil{
+		return nil, err
+	}
+
+	res, err := stmt.Query(movie_id)
+
+	if err != nil{
+		return nil, err
+	}
+
+	var reviews []dto.ReviewResponse
+
+	for res.Next(){
+		var review dto.ReviewResponse
+		err := res.Scan(&review.ReviewId, &review.MovieId, &review.UserId, &review.Title, &review.Description, &review.Rating, &review.Likes, &review.DisLikes, &review.PublishOn, &review.LastEditOn, &review.IsSpoiler)
+		if err != nil{
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+
+	return reviews, nil
 }
 
-func (r *postgresReviewRepository) GetReviewByUserEmailId(email string) (*domain.Review, error){
+func (r *postgresReviewRepository) GetReviewByUserEmailId(email string) ([]dto.ReviewResponse, error){
 
-	return nil, nil
+	stmt, err := r.db.Prepare("SELECT review_id, movie_id, user_email, title, description, rating, likes, dislikes, published_on, last_edit_on, is_spoiler FROM reviews WHERE user_email = $1")
+
+	if err != nil{
+		return nil, err
+	}
+
+	res, err := stmt.Query(email)
+
+	if err != nil{
+		return nil, err
+	}
+
+	var reviews []dto.ReviewResponse
+
+	for res.Next(){
+		var review dto.ReviewResponse
+		err := res.Scan(&review.ReviewId, &review.MovieId, &review.UserId, &review.Title, &review.Description, &review.Rating, &review.Likes, &review.DisLikes, &review.PublishOn, &review.LastEditOn, &review.IsSpoiler)
+		if err != nil{
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+
+	return reviews, nil
 }
-func (r *postgresReviewRepository) Update(review *domain.Review) error{
+func (r *postgresReviewRepository) Update(review *domain.Review, reviewId int64) error{
+
+	query := "UPDATE table reviews SET title = $1, description = $2, rating = $3, is_spoiler = $4 WHERE review_id = $5"
+
+	_, err := r.db.Exec(query, review.Title, review.Description, review.Rating, review.IsSpoiler, reviewId)
+
+	if err != nil{
+		return err
+	}
 
 	return nil
 }
 func (r *postgresReviewRepository) Delete(reviewId int64) error{
+
+	_, err := r.db.Prepare("SELECT * FROM reviews WHERE review_id = $1")
+
+	if err != nil{
+		if err == sql.ErrNoRows{
+			return fmt.Errorf("no review found with the id: %d", reviewId)
+		}else{
+			return err
+		}
+	}
+
+	query := "DELETE FROM reviews WHERE review_id = $1"
+
+	_, err = r.db.Exec(query, reviewId)
+
+	if err != nil{
+		return err
+	}
 
 	return nil
 }

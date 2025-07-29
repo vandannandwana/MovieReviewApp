@@ -75,11 +75,11 @@ func (r *postgreMovieRepository) Update(movie *domain.Movie, movieId int64) erro
 }
 func (r *postgreMovieRepository) Delete(movieId int64) error{
 
-	_, err := r.db.Prepare("SELECT * FROM moies WHERE movie_id = $1")
+	_, err := r.db.Prepare("SELECT * FROM movies WHERE movie_id = $1")
 
 	if err != nil{
 		if err == sql.ErrNoRows{
-			return fmt.Errorf("No user found with the id: ", movieId)
+			return fmt.Errorf("no movie found with the id: %d", movieId)
 		}else{
 			return err
 		}

@@ -1,6 +1,10 @@
 package domain
 
-import "time"
+import (
+	"time"
+
+	"github.com/vandannandwana/MovieReviewApp/internal/delivery/http/dto"
+)
 
 type Review struct {
 	MovieId     int64  `json:"movieId" binding:"required"`
@@ -17,9 +21,9 @@ type Review struct {
 
 type ReviewRepository interface {
 	New(review *Review) error
-	GetReviewById(id int64) (*Review, error)
-	GetReviewByMovieId(id int64) (*Review, error)
-	GetReviewByUserEmailId(email string) (*Review, error)
-	Update(review *Review) error
+	GetReviewById(id int64) (*dto.ReviewResponse, error)
+	GetReviewByMovieId(id int64) ([]dto.ReviewResponse, error)
+	GetReviewByUserEmailId(email string) ([]dto.ReviewResponse, error)
+	Update(review *Review, reviewId int64) error
 	Delete(reviewId int64) error
 }
