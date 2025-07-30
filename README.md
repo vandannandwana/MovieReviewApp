@@ -145,8 +145,8 @@ The API is accessible via HTTP requests. Below are the main endpoints. All reque
 * **Request Body**: (Fields are optional; only provided fields will be updated)  
   {  
       "title": "The Go Movie: The Sequel",  
-      "description": "A thrilling adventure about concurrency.", 
-      "email": "abc@gmail.com"
+      "description": "A thrilling adventure about concurrency.",  
+      "email": "abc@gmail.com",  
       "images": \["url1.jpg", "url2.jpg"\],  
       "videos": \["trailer.mp4"\],  
       "genres": \["Action", "Comedy"\],  
@@ -207,8 +207,8 @@ The API is accessible via HTTP requests. Below are the main endpoints. All reque
 * **URL Parameters**: id  
 * **Request Body**: (Fields are optional)  
   {  
-      "movie\_id":1,
-      "user_email":"abc@gmail.com"
+      "movie\_id":1,  
+      "user_email":"abc@gmail.com"  
       "title": "Still Amazing\!",  
       "description": "Re-watched and still love it.",  
       "rating": 5,  
