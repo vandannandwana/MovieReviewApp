@@ -53,6 +53,11 @@ func (h *ReviewHandler) CreateReview(c *gin.Context) {
 			return
 		}
 
+		if err.Error() == "pq: new row for relation \"reviews\" violates check constraint \"reviews_rating_check\""{
+			c.JSON(http.StatusInternalServerError, StandardError("Keep the rating between 1 to 5 (without any decimal value)."))
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, StandardError(err.Error()))
 		return
 	}
