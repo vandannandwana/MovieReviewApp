@@ -2,7 +2,9 @@ package postgres
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+
 	"github.com/vandannandwana/MovieReviewApp/internal/delivery/http/dto"
 	"github.com/vandannandwana/MovieReviewApp/internal/domain"
 )
@@ -16,9 +18,31 @@ func NewPostgreReviewRepository (db *sql.DB) (domain.ReviewRepository){
 }
 
 func (r *postgresReviewRepository) New(review *domain.Review) error{
-	query := "INSERT INTO reviews (movie_id, user_email, title, description, rating, likes, dislikes, published_on, last_edit_on, is_spoiler) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
 
-	_, err := r.db.Exec(query, review.MovieId,review.UserEmail, review.Title, review.Description, review.Rating, review.Likes, review.DisLikes, review.PublishedOn, review.LastEditOn, review.IsSpoiler)
+
+	//Checking the previous review
+	query := "SELECT review_id FROM reviews WHERE user_email = $1 AND movie_id = $2 LIMIT 1"
+	stmt, err := r.db.Prepare(query)
+	if err != nil{
+		fmt.Println(err)
+	}
+	
+	var prevReviewId int64
+
+	err = stmt.QueryRow(review.UserEmail, review.MovieId).Scan(&prevReviewId)
+
+	if err == nil{
+		return fmt.Errorf("already review exists with the email id")
+	}
+	if !errors.Is(err, sql.ErrNoRows){
+		return err
+	}
+
+
+	//INserting new review
+	query = "INSERT INTO reviews (movie_id, user_email, title, description, rating, likes, dislikes, published_on, last_edit_on, is_spoiler) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
+
+	_, err = r.db.Exec(query, review.MovieId,review.UserEmail, review.Title, review.Description, review.Rating, review.Likes, review.DisLikes, review.PublishedOn, review.LastEditOn, review.IsSpoiler)
 
 	if err != nil{
 		return err
@@ -101,9 +125,9 @@ func (r *postgresReviewRepository) GetReviewByUserEmailId(email string) ([]dto.R
 }
 func (r *postgresReviewRepository) Update(review *domain.Review, reviewId int64) error{
 
-	query := "UPDATE reviews SET title = $1, description = $2, rating = $3, is_spoiler = $4 WHERE review_id = $5"
+	query := "UPDATE reviews SET title = $1, description = $2, rating = $3, is_spoiler = $4 WHERE review_id = $5 AND user_email = $6 AND movie_id = $7"
 
-	_, err := r.db.Exec(query, review.Title, review.Description, review.Rating, review.IsSpoiler, reviewId)
+	_, err := r.db.Exec(query, review.Title, review.Description, review.Rating, review.IsSpoiler, reviewId, review.UserEmail, review.MovieId)
 
 	if err != nil{
 		return err

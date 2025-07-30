@@ -22,6 +22,7 @@ type CreateMovieRequest struct {
 
 type UpdateMovieRequest struct {
 	Title               string    `json:"title,omitempty"`
+	UserEmail           string    `json:"email" binding:"required"`
 	Description         string    `json:"description,omitempty"`
 	ReleaseOn           time.Time `json:"release_on"`
 	Images              []string  `json:"images,omitempty"`
@@ -39,6 +40,7 @@ type UpdateMovieRequest struct {
 
 type MovieResponse struct {
 	MovieId             int64     `json:"movie_id"`
+	UserEmail           string    `json:"email"`
 	Title               string    `json:"title"`
 	Description         string    `json:"description"`
 	ReleaseOn           time.Time `json:"release_on"`

@@ -55,7 +55,7 @@ func (r *postgreMovieRepository) New(movie *domain.Movie) error{
 }
 func (r *postgreMovieRepository) GetMovieById(id int64) (*dto.MovieResponse, error){
 
-	stmt, err := r.db.Prepare("SELECT movie_id, title, description, released_on, images, videos, genres, directors, writers, casts, avg_rating, origin_country, languages, production_companies, budget, runtime FROM movies WHERE movie_id = $1")
+	stmt, err := r.db.Prepare("SELECT movie_id, user_email, title, description, released_on, images, videos, genres, directors, writers, casts, avg_rating, origin_country, languages, production_companies, budget, runtime FROM movies WHERE movie_id = $1")
 
 	if err != nil{
 		return nil, err
@@ -66,6 +66,7 @@ func (r *postgreMovieRepository) GetMovieById(id int64) (*dto.MovieResponse, err
 	var movie dto.MovieResponse
 
 	err = stmt.QueryRow(id).Scan(&movie.MovieId, 
+		&movie.UserEmail,
 		&movie.Title, 
 		&movie.Description, 
 		&movie.ReleaseOn, 

@@ -59,8 +59,8 @@ func New(db *sql.DB) (*Postgre, error) {
 	rating INTEGER,
 	likes INTEGER,
 	dislikes INTEGER,
-	published_on DATE,
-	last_edit_on DATE,
+	published_on TIMESTAMPTZ,
+	last_edit_on TIMESTAMPTZ,
 	is_spoiler BOOLEAN
 	)`)
 

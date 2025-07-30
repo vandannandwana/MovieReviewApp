@@ -142,6 +142,7 @@ func (h *ReviewHandler) UpdateReview(c *gin.Context) {
 
 	if err != nil{
 		c.JSON(http.StatusInternalServerError, StandardError(err.Error()))
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status":"Review Update Successfully"})

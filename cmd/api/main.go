@@ -61,7 +61,7 @@ func main() {
 
 	userService := usecase.NewUserService(userRepo)
 	movieService := usecase.NewMovieService(movieRepo)
-	reviewService := usecase.NewReviewService(reviewRepo)
+	reviewService := usecase.NewReviewService(reviewRepo, movieRepo)
 
 	//Initialize Handlers
 
