@@ -17,7 +17,7 @@ func NewPostgresUserRepository (db *sql.DB) (domain.UserRepository){
 }
 
 func (r *postgresUserRepository) New(user *domain.User) error{
-	query := "INSERT INTO users (name, email, password, bio, gender, joinedOn, profilePicture) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	query := "INSERT INTO users (name, email, password, bio, gender, joined_on, profile_picture) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 	_, err := r.db.Exec(query, user.Name, user.Email, user.Password, user.Bio, user.Gender, user.JoinedOn, user.ProfilePicture)
 
 	if err != nil{
@@ -28,7 +28,7 @@ func (r *postgresUserRepository) New(user *domain.User) error{
 
 func (r *postgresUserRepository) GetByEmail(email string) (*domain.User, error){
 
-	stmt, err := r.db.Prepare("SELECT name, email, password, bio, joinedOn, profilePicture, gender FROM users WHERE email = $1 LIMIT 1")
+	stmt, err := r.db.Prepare("SELECT name, email, password, bio, joined_on, profile_picture, gender FROM users WHERE email = $1 LIMIT 1")
 
 	if err != nil{
 		return nil, err
@@ -42,7 +42,7 @@ func (r *postgresUserRepository) GetByEmail(email string) (*domain.User, error){
 
 	if err != nil{
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("no user found with the email id %s", fmt.Sprint(email))
+			return nil, err
 		}
 		return nil, fmt.Errorf("query Error: %w", err)
 	}
@@ -51,7 +51,7 @@ func (r *postgresUserRepository) GetByEmail(email string) (*domain.User, error){
 }
 func (r *postgresUserRepository) Update(user *domain.User, email string) error{
 
-	stmt, err := r.db.Prepare("UPDATE table SET name = $1, email = $2, password = $3, bio = $4, gender = $5, profilePicture = $6 WHERE email = $7")
+	stmt, err := r.db.Prepare("UPDATE table SET name = $1, email = $2, password = $3, bio = $4, gender = $5, profile_picture = $6 WHERE email = $7")
 
 
 	if err != nil{

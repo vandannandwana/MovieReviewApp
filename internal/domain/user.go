@@ -4,7 +4,7 @@ import "time"
 
 type User struct {
 	Name           string `json:"name" binding:"required"`
-	Email          string `json:"email" binding:"required"`  // Primary Key
+	Email          string `json:"email" binding:"required"`
 	Password       string `json:"password" binding:"required"`
 	Bio            string `json:"bio" binding:"required"`
 	Gender         string `json:"gender" binding:"required"`

@@ -2,7 +2,9 @@ package postgres
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"log/slog"
 
 	"github.com/lib/pq"
 	"github.com/vandannandwana/MovieReviewApp/internal/delivery/http/dto"
@@ -125,16 +127,30 @@ func (r *postgreMovieRepository) Update(movie *domain.Movie, movieId int64) erro
 
 	return nil
 }
-func (r *postgreMovieRepository) Delete(movieId int64) error{
+func (r *postgreMovieRepository) Delete(movieId int64, userEmail string) error{
 
-	_, err := r.db.Prepare("SELECT * FROM movies WHERE movie_id = $1")
+	stmt, err := r.db.Prepare("SELECT user_email FROM movies WHERE movie_id = $1 LIMIT 1")
 
 	if err != nil{
-		if err == sql.ErrNoRows{
+		slog.Error("Prepare statement error",slog.String("error: ", err.Error()))
+	}
+
+	defer stmt.Close()
+
+	var prevUserEmail string
+
+	err = stmt.QueryRow(movieId).Scan(&prevUserEmail)
+
+	if err != nil{
+		if errors.Is(err, sql.ErrNoRows){
 			return fmt.Errorf("no movie found with the id: %d", movieId)
 		}else{
 			return err
 		}
+	}
+
+	if prevUserEmail != userEmail{
+		return fmt.Errorf("you are not allowed to delete the movie, only owners are allowed")
 	}
 
 	query := "DELETE FROM movies WHERE movie_id = $1"

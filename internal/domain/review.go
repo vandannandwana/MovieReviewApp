@@ -8,8 +8,8 @@ import (
 
 type Review struct {
 	ReviewId int64
-	MovieId     int64  `json:"movieId" binding:"required"`
-	UserEmail   string `json:"userEmail" binding:"required"`
+	MovieId     int64  `json:"movie_id" binding:"required"`
+	UserEmail   string `json:"user_email" binding:"required"`
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description" binding:"required"`
 	Rating      int    `json:"rating" binding:"required"`
@@ -17,7 +17,7 @@ type Review struct {
 	DisLikes    int64  
 	PublishedOn time.Time
 	LastEditOn  time.Time
-	IsSpoiler   bool `json:"isSpoiler" binding:"required"`
+	IsSpoiler   bool `json:"is_spoiler"`
 }
 
 type ReviewRepository interface {
@@ -26,5 +26,5 @@ type ReviewRepository interface {
 	GetReviewByMovieId(id int64) ([]dto.ReviewResponse, error)
 	GetReviewByUserEmailId(email string) ([]dto.ReviewResponse, error)
 	Update(review *Review, reviewId int64) error
-	Delete(reviewId int64) error
+	Delete(reviewId int64, userEmail string) error
 }

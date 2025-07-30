@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"database/sql"
 	"errors"
 	"time"
 
@@ -26,7 +27,11 @@ func (s *userService) RegisterUser(name, email, password, bio, gender, profilePi
 	existingUser, err := s.userRepo.GetByEmail(email)
 
 	if err != nil{
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows){
+			//continue
+		}else{
+			return nil, err
+		}
 	}
 
 	if existingUser != nil{
@@ -64,11 +69,10 @@ func (s *userService) LoginUser(email, password string) (bool, error){
 	user, err := s.userRepo.GetByEmail(email)
 
 	if err != nil{
+		if errors.Is(err, sql.ErrNoRows){
+			return false, errors.New("user not found")
+		}
 		return false, err
-	}
-
-	if user == nil{
-		return false, errors.New("user not found")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil{

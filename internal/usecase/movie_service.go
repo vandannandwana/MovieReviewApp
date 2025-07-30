@@ -11,7 +11,7 @@ type MovieService interface {
 	CreateMovie(movie *dto.CreateMovieRequest) error
 	GetMovieById(id int64) (*dto.MovieResponse, error)
 	UpdateMovie(movie *dto.UpdateMovieRequest, movieId int64) error
-	DeleteMovie(movieId int64) error
+	DeleteMovie(movieId int64, userEmail string) error
 }
 
 type movieService struct{
@@ -63,6 +63,16 @@ func (s *movieService) GetMovieById(id int64) (*dto.MovieResponse, error){
 }
 func (s *movieService) UpdateMovie(movieDto *dto.UpdateMovieRequest, movieId int64) error{
 
+	prevMovie, err := s.GetMovieById(movieId)
+
+	if err != nil{
+		return fmt.Errorf("no movie found with the movie_id %d", movieId)
+	}
+	
+	if prevMovie.UserEmail != movieDto.UserEmail{
+		return fmt.Errorf("you are not allowed to make changes in the movie, only owners are allowed")
+	}
+
 	fmt.Println(movieDto)
 
 
@@ -84,7 +94,7 @@ func (s *movieService) UpdateMovie(movieDto *dto.UpdateMovieRequest, movieId int
 	}
 
 
-	err := s.movieRepo.Update(&movie, movieId)
+	err = s.movieRepo.Update(&movie, movieId)
 
 	if err != nil{
 		return err
@@ -92,9 +102,9 @@ func (s *movieService) UpdateMovie(movieDto *dto.UpdateMovieRequest, movieId int
 
 	return nil
 }
-func (s *movieService) DeleteMovie(movieId int64) error{
+func (s *movieService) DeleteMovie(movieId int64, userEmail string) error{
 
-	err := s.movieRepo.Delete(movieId)
+	err := s.movieRepo.Delete(movieId, userEmail)
 
 	if err != nil{
 		return err

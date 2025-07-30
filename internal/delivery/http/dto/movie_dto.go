@@ -50,7 +50,7 @@ type MovieResponse struct {
 	Directors           []string  `json:"directors"`
 	Writers              []string  `json:"writes"`
 	Casts               []string  `json:"casts"`
-	AverageRatings      int       `json:"average_ratings"`
+	AverageRatings      float64       `json:"average_ratings"`
 	OriginCountry       string    `json:"origin_country"`
 	Languages           []string  `json:"languages"`
 	ProductionCompanies []string  `json:"production_companies"`

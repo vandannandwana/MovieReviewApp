@@ -1,12 +1,18 @@
 package main
 
 import (
-	// "fmt"
+	"context"
 	"database/sql"
 	"log"
+	"log/slog"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	_ "github.com/lib/pq"
-	"github.com/vandannandwana/MovieReviewApp/internal/delivery/http"
+	myhttp "github.com/vandannandwana/MovieReviewApp/internal/delivery/http"
 	"github.com/vandannandwana/MovieReviewApp/internal/delivery/http/handler"
 	"github.com/vandannandwana/MovieReviewApp/internal/infrastructure/persistance"
 	"github.com/vandannandwana/MovieReviewApp/internal/infrastructure/persistance/postgres"
@@ -32,20 +38,18 @@ func main() {
 		log.Fatalf("Error Connectong to the database: %v", err)
 	}
 
-
 	postgresDatabase, err := persistance.New(db)
-	if err !=nil{
+	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-
-	defer func(){
-		if err := postgresDatabase.Db.Close(); err != nil{
+	defer func() {
+		if err := postgresDatabase.Db.Close(); err != nil {
 			log.Printf("Error closing the Database: %s", err.Error())
 		}
 	}()
 
-	if err := postgresDatabase.Db.Ping(); err != nil{
+	if err := postgresDatabase.Db.Ping(); err != nil {
 		log.Fatalf("Failed to ping database: %v", err)
 	}
 
@@ -69,11 +73,37 @@ func main() {
 	movieHandler := handler.NewMovieHandler(movieService)
 	reviewHandler := handler.NewReviewHandler(reviewService)
 
-	router := http.NewRouter(*userHandler, *movieHandler, *reviewHandler)
+	router := myhttp.NewRouter(*userHandler, *movieHandler, *reviewHandler)
+
+	server := http.Server{
+		Handler: router.Handler(),
+	}
 
 	log.Printf("Starting HTTP server on port %s...", httpPort)
-	if err := router.Run(httpPort); err != nil{
-		log.Fatalf("Failed to start server: %v", err)
+
+	done := make(chan os.Signal, 1)
+
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	
+
+	go func() {
+		if err := router.Run(httpPort); err != nil {
+			log.Fatalf("Failed to start server: %v", err)
+		}
+	}()
+
+	<-done
+	
+	slog.Info("Shutting down server")
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		slog.Error("Failed to shutdown server", slog.String("error: ", err.Error()))
 	}
+
+	slog.Info("Server Shutdown Successfully")
 
 }

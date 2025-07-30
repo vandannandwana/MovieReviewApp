@@ -3,9 +3,9 @@ package dto
 import "time"
 
 type RegisterUserRequest struct {
-	Name           string `json:"name"`
-	Email          string `json:"email"`
-	Password       string `json:"password"`
+	Name           string `json:"name" binding:"required"`
+	Email          string `json:"email" binding:"required"`
+	Password       string `json:"password" binding:"required"`
 	Bio            string `json:"bio"`
 	Gender         string `json:"gender"`
 	ProfilePicture string `json:"profile_picture"`

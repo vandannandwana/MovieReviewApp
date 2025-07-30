@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"github.com/vandannandwana/MovieReviewApp/internal/delivery/http/dto"
 	"github.com/vandannandwana/MovieReviewApp/internal/domain"
@@ -18,28 +19,27 @@ func NewPostgreReviewRepository (db *sql.DB) (domain.ReviewRepository){
 }
 
 func (r *postgresReviewRepository) New(review *domain.Review) error{
-
-
 	//Checking the previous review
 	query := "SELECT review_id FROM reviews WHERE user_email = $1 AND movie_id = $2 LIMIT 1"
 	stmt, err := r.db.Prepare(query)
+
 	if err != nil{
-		fmt.Println(err)
+		fmt.Println(err.Error())
 	}
 	
 	var prevReviewId int64
 
 	err = stmt.QueryRow(review.UserEmail, review.MovieId).Scan(&prevReviewId)
 
-	if err == nil{
+	if prevReviewId != 0{
 		return fmt.Errorf("already review exists with the email id")
 	}
+
 	if !errors.Is(err, sql.ErrNoRows){
 		return err
 	}
 
-
-	//INserting new review
+	//Inserting new review
 	query = "INSERT INTO reviews (movie_id, user_email, title, description, rating, likes, dislikes, published_on, last_edit_on, is_spoiler) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
 
 	_, err = r.db.Exec(query, review.MovieId,review.UserEmail, review.Title, review.Description, review.Rating, review.Likes, review.DisLikes, review.PublishedOn, review.LastEditOn, review.IsSpoiler)
@@ -135,16 +135,30 @@ func (r *postgresReviewRepository) Update(review *domain.Review, reviewId int64)
 
 	return nil
 }
-func (r *postgresReviewRepository) Delete(reviewId int64) error{
+func (r *postgresReviewRepository) Delete(reviewId int64, userEmail string) error{
 
-	_, err := r.db.Prepare("SELECT * FROM reviews WHERE review_id = $1")
+	stmt, err := r.db.Prepare("SELECT user_email FROM reviews WHERE review_id = $1")
 
 	if err != nil{
-		if err == sql.ErrNoRows{
+		slog.Error("Prepare statement error",slog.String("error: ", err.Error()))
+	}
+
+	defer stmt.Close()
+
+	var prevUserEmail string
+
+	err = stmt.QueryRow(reviewId).Scan(&prevUserEmail)
+
+	if err != nil{
+		if errors.Is(err, sql.ErrNoRows){
 			return fmt.Errorf("no review found with the id: %d", reviewId)
 		}else{
 			return err
 		}
+	}
+
+	if prevUserEmail != userEmail{
+		return fmt.Errorf("you are not allowed to delete the review, only owners are allowed")
 	}
 
 	query := "DELETE FROM reviews WHERE review_id = $1"

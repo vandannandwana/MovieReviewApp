@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -15,7 +16,7 @@ type ReviewService interface {
 	GetReviewByMovieId(id int64) ([]dto.ReviewResponse, error)
 	GetReviewByUserEmailId(email string) ([]dto.ReviewResponse, error)
 	UpdateReview(review *domain.Review, reviewId int64) error
-	DeleteReview(reviewId int64) error
+	DeleteReview(reviewId int64, userEmail string) error
 }
 
 type reviewService struct {
@@ -34,7 +35,7 @@ func (s *reviewService) CreateReview(review *domain.Review) error {
 	movie, err := s.movieRepo.GetMovieById(review.MovieId)
 
 	if err != nil{
-		if err == sql.ErrNoRows{
+		if errors.Is(err, sql.ErrNoRows){
 			return fmt.Errorf("no movie present with the movie id: %d", review.MovieId)
 		}else{
 			return err
@@ -92,6 +93,12 @@ func (s *reviewService) UpdateReview(review *domain.Review, reviewId int64) erro
 	if err != nil {
 		return err
 	}
+
+	if prevReview.UserId != review.UserEmail{
+		return fmt.Errorf("you are not allowed to make changes, only owners are allowed")
+	}
+
+
 	prevTime := prevReview.PublishOn
 	fmt.Println(time.Since(prevTime))
 
@@ -107,9 +114,9 @@ func (s *reviewService) UpdateReview(review *domain.Review, reviewId int64) erro
 
 	return nil
 }
-func (s *reviewService) DeleteReview(reviewId int64) error {
+func (s *reviewService) DeleteReview(reviewId int64, userEmail string) error {
 
-	err := s.reviewRepo.Delete(reviewId)
+	err := s.reviewRepo.Delete(reviewId, userEmail)
 
 	if err != nil {
 		return err
