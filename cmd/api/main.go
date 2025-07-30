@@ -12,6 +12,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+	"github.com/vandannandwana/MovieReviewApp/internal/config"
 	myhttp "github.com/vandannandwana/MovieReviewApp/internal/delivery/http"
 	"github.com/vandannandwana/MovieReviewApp/internal/delivery/http/handler"
 	"github.com/vandannandwana/MovieReviewApp/internal/infrastructure/persistance"
@@ -21,12 +22,14 @@ import (
 
 func main() {
 
-	dbHost := "localhost"
-	dbPort := "5432"
-	dbUser := "postgres"
-	dbPassword := "vandan"
-	dbName := "postgres"
-	httpPort := ":8082"
+	config := config.Init()
+
+	dbHost := config.DbHost
+	dbPort := config.DbPort
+	dbUser := config.DbUser
+	dbPassword := config.DbPassword
+	dbName := config.DbName
+	httpPort := config.HttpPort
 
 	if dbHost == "" || dbPort == "" || dbUser == "" || dbPassword == "" || dbName == "" || httpPort == "" {
 		log.Fatal("Missing environment variables for database or HTTP port. Ensure DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, HTTP_PORT are set.")
