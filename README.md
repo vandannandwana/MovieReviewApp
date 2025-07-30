@@ -44,7 +44,7 @@ Make sure you have the following installed:
 
 1. Clone the Repository:  
    Open your terminal or command prompt and clone the project:  
-   git clone https://github.com/your-username/movie-review-backend.git \# Replace with your actual repo URL  
+   git clone https://github.com/vandannandwana/MovieReviewApp.git \# Replace with your actual repo URL  
    cd movie-review-backend
 
 2. **Database Setup**:  
