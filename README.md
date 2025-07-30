@@ -44,12 +44,12 @@ Make sure you have the following installed:
 
 1. Clone the Repository:  
    Open your terminal or command prompt and clone the project:  
-   git clone https://github.com/vandannandwana/MovieReviewApp.git \# Replace with your actual repo URL  
-   cd movie-review-backend
+   git clone https://github.com/vandannandwana/MovieReviewApp.git 
+   cd movieReviewApp
 
 2. **Database Setup**:  
    * **Create a Database**: Connect to your PostgreSQL server (e.g., using psql or a GUI tool like DBeaver/pgAdmin) and create a new database.  
-     CREATE DATABASE movie\_reviews\_db;
+     CREATE DATABASE postgres;
 
    * **Table Creation**: The application will automatically create the necessary tables (users, movies, reviews) with all validations and relationships when it starts up for the first time. You don't need to run separate migration scripts.  
 3. Environment Variables:  
@@ -84,9 +84,9 @@ The API is accessible via HTTP requests. Below are the main endpoints. All reque
 * **Description**: Creates a new user account.  
 * **Request Body**:  
   {  
-      "name": "John Doe",  
-      "email": "john.doe@example.com",  
-      "password": "securepassword123",  
+      "name": "Vandan Nandwana",  
+      "email": "vandan@example.com",  
+      "password": "12345",  
       "bio": "Movie enthusiast\!",  
       "gender": "Male",  
       "profile\_picture": "http://example.com/profile.jpg"  
@@ -99,8 +99,8 @@ The API is accessible via HTTP requests. Below are the main endpoints. All reque
 * **Description**: Authenticates a user and returns a JWT token.  
 * **Request Body**:  
   {  
-      "email": "john.doe@example.com",  
-      "password": "securepassword123"  
+      "email": "vandan@example.com",  
+      "password": "12345"  
   } 
 
 ### **Movies**
