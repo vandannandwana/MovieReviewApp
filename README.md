@@ -146,6 +146,7 @@ The API is accessible via HTTP requests. Below are the main endpoints. All reque
   {  
       "title": "The Go Movie: The Sequel",  
       "description": "A thrilling adventure about concurrency.", 
+      "email": "abc@gmail.com"
       "images": \["url1.jpg", "url2.jpg"\],  
       "videos": \["trailer.mp4"\],  
       "genres": \["Action", "Comedy"\],  
